@@ -71,7 +71,7 @@ public class UserController {
     @PostMapping("/logout")
     public BaseResponse<Integer> userLogout(HttpServletRequest request) {
         if(request == null) {
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "前端传来的登出请求为空");
         }  // 小写的 long 可以写返回-1，但是大写的 Long 返回要写 null，跟前面讲也有一个对应
 
         // return userService.userLogout(request);
@@ -84,7 +84,7 @@ public class UserController {
         Object userObject = request.getSession().getAttribute(USER_LOGIN_STATE);
         User currentUser = (User) userObject;
         if(currentUser == null) {   // 没登录过
-            return null;
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "没登录过");
         }
         // 如果已经登录过了,去数据库取他的真实数据，就是除了账号密码以外的id，就是去数据库把他全部玩意都给取出来
         long userId = currentUser.getId();
@@ -102,7 +102,7 @@ public class UserController {
         if(!isAdmin(request)) {
             // return new ArrayList<>();
             ArrayList<User> objects = new ArrayList<>();
-            return ResultUtils.success(objects);
+            throw new BusinessException(ErrorCode.NO_AUTH, "不是管理员，没有权限查询");
         }
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         if(StringUtils.isNoneBlank(userName)) {
@@ -114,7 +114,7 @@ public class UserController {
         return ResultUtils.success(list);
     }
 
-    @PostMapping("/delete")
+    @GetMapping("/delete")
     public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
         if(!isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH, "不是管理员，没有权限删除");

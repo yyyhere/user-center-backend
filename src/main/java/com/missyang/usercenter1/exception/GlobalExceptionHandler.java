@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j  // 写 log 日志
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(BusinessException.class)
     public BaseResponse businessExceptionHandler(BusinessException e){
         log.error("businessException" + e.getMessage(), e);
         return ResultUtils.error(e.getCode(), e.getMessage(), e.getDescription());
@@ -21,6 +21,6 @@ public class GlobalExceptionHandler {
     public BaseResponse runTimeExceptionHandler(RuntimeException r) {
 
         log.error("runTimeException" ,r);
-        return ResultUtils.error(ErrorCode.SYSTEM_ERROR, r.getMessage(), "");
+        return ResultUtils.error(ErrorCode.SYSTEM_ERROR, r.getMessage(), "内部异常，就是那个runTime的异常");
     }
 }
